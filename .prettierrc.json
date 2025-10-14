@@ -1,0 +1,15 @@
+{
+    "arrowParens": "always",
+    "bracketSameLine": true,
+    "bracketSpacing": true,
+    "endOfLine": "crlf",
+    "embeddedLanguageFormatting": "auto",
+    "htmlWhitespaceSensitivity": "css",
+    "printWidth": 120,
+    "quoteProps": "consistent",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "es5",
+    "useTabs": false
+}
