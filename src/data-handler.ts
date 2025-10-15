@@ -9,14 +9,14 @@ export class DataHandler {
 
     private structureMapper: { [key: string]: StructureDomain[] };
     private selectMapper: Dictionary<string>;
-    private expressionsMapper: Dictionary<string[]>;
+    // private expressionsMapper: Dictionary<string[]>;
     
     public constructor() {
         this.response = null;
         this.result = null;
         this.structureMapper = {};
         this.selectMapper = {};
-        this.expressionsMapper = {};
+        // this.expressionsMapper = {};
     }
 
     private processNode(node: any, template: Dictionary<any>, structure: StructureDomain[], valueDicts: Dictionary<string[]>): Dictionary<any>[] {
@@ -96,10 +96,10 @@ export class DataHandler {
             return pv;
         }, {} as Dictionary<string>);
     
-        this.expressionsMapper = data.descriptor.expressions.primary.groupings.reduce((pv, cv) => {
-            pv[cv.member] = cv.keys.map(key => `${key.source.entity}.${key.source.property}`);
-            return pv;
-        }, {} as Dictionary<string[]>);
+        // this.expressionsMapper = data.descriptor.expressions.primary.groupings.reduce((pv, cv) => {
+        //     pv[cv.member] = cv.keys.map(key => `${key.source.entity}.${key.source.property}`);
+        //     return pv;
+        // }, {} as Dictionary<string[]>);
     }
 
     public async processData(): Promise<void> {
