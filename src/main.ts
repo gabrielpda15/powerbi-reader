@@ -4,18 +4,18 @@ import 'dotenv/config';
 import { Response } from './models/response-model';
 import { JsonConverter } from './json/json-converter';
 import { DataHandler, DataHandlerResult } from './data-handler';
-import { readdir as fsReadDir } from 'fs/promises';
+import { readdir as fsReadDir, readFile as fsReadfile } from 'fs/promises';
 import { basename as pathBasename, join as pathJoin } from 'path';
 import { Arguments } from './models/arguments';
 import { FileHandler } from './file-handler';
 import { request as httpsRequest } from 'https';
 import { OutgoingHttpHeaders } from 'http';
 
-type ProcessedData = { name: string, data: DataHandlerResult };
-type NameContent = { name: string, content: string };
+type ProcessedData = { name: string; data: DataHandlerResult };
+type NameContent = { name: string; content: string };
 
 async function processData(data: NameContent[]): Promise<ProcessedData[]> {
-    const resultPromises = data.map(async fileContent => {
+    const resultPromises = data.map(async (fileContent) => {
         const response = JsonConverter.convert(Response, JSON.parse(fileContent.content));
         const dataHandler = new DataHandler();
         dataHandler.setResponse(response);
@@ -24,7 +24,7 @@ async function processData(data: NameContent[]): Promise<ProcessedData[]> {
 
         return {
             name: fileContent.name,
-            data: dataHandler.getResult()
+            data: dataHandler.getResult(),
         };
     });
 
@@ -45,22 +45,25 @@ async function post(body: string): Promise<string> {
 
     return new Promise((res, rej) => {
         try {
-            const request = httpsRequest({
-                host: process.env.REQUEST_HOST,
-                path: process.env.REQUEST_PATH,
-                method: 'POST',
-                headers: defaultHeaders,
-            }, (response) => {
-                let data = '';
+            const request = httpsRequest(
+                {
+                    host: process.env.REQUEST_HOST,
+                    path: process.env.REQUEST_PATH,
+                    method: 'POST',
+                    headers: defaultHeaders,
+                },
+                (response) => {
+                    let data = '';
 
-                response.on('data', (chunk) => {
-                    data += chunk.toString();
-                });
+                    response.on('data', (chunk) => {
+                        data += chunk.toString();
+                    });
 
-                response.on('end', () => {
-                    res(data);
-                });
-            });
+                    response.on('end', () => {
+                        res(data);
+                    });
+                }
+            );
 
             request.on('error', (err) => {
                 rej(err);
@@ -73,19 +76,18 @@ async function post(body: string): Promise<string> {
             request.end();
         } catch (err: unknown) {
             rej(err);
-        }        
+        }
     });
 }
 
 async function requestData(...files: string[]): Promise<NameContent[]> {
     const results: NameContent[] = [];
 
-    for (const file of files) {
-        const content = await import(file);
-        const jsonContent = JSON.stringify(content);
+    for (const file of files) {        
+        const content = await fsReadfile(file, { encoding: 'utf-8' });
         results.push({
             name: pathBasename(file, '.json'),
-            content: await post(jsonContent)
+            content: await post(content),
         });
     }
 
@@ -95,7 +97,7 @@ async function requestData(...files: string[]): Promise<NameContent[]> {
 async function getDirectoryFiles(basePath: string) {
     const path = pathJoin(__dirname, basePath);
     const result = await fsReadDir(path, { encoding: 'utf-8', recursive: true, withFileTypes: true });
-    return result.map(item => pathJoin(item.parentPath, item.name));
+    return result.map((item) => pathJoin(item.parentPath, item.name));
 }
 
 async function main() {
@@ -112,11 +114,13 @@ async function main() {
     const result = await processData(requestedData);
 
     const mappedResult = result.reduce((acc, item) => {
-        const mappedItems = Object.keys(item.data)
-            .map(key => ({ name: `${item.name}.${key}`, content: JSON.stringify(item.data[key], null, '\t') }));
+        const mappedItems = Object.keys(item.data).map((key) => ({
+            name: `${item.name}.${key}`,
+            content: JSON.stringify(item.data[key], null, '\t'),
+        }));
         return [...acc, ...mappedItems];
     }, []);
-    
+
     const fileHandler = new FileHandler(args.output);
     await fileHandler.writeFiles(...mappedResult);
 
@@ -124,4 +128,4 @@ async function main() {
     console.log(`Done! ${elapsedTime} ms`);
 }
 
-main().catch(err => console.error(err));
+main().catch((err) => console.error(err));
