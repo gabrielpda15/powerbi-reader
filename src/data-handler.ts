@@ -2,10 +2,12 @@ import { JsonConverter } from "./json/json-converter";
 import { Dictionary } from "./models/generic-types";
 import { Response, DataSet, StructureDomain } from "./models/response-model";
 
+export type DataHandlerResult = Dictionary<Dictionary<any>[]>;
+
 export class DataHandler {
 
     private response: Response;
-    private result: Dictionary<Dictionary<any>[]>;
+    private result: DataHandlerResult;
 
     private structureMapper: { [key: string]: StructureDomain[] };
     private selectMapper: Dictionary<string>;
@@ -126,7 +128,7 @@ export class DataHandler {
         });
     }
 
-    public getResult() {
+    public getResult(): DataHandlerResult {
         return this.result;
     }
 }
