@@ -40,13 +40,11 @@ export class PowerBIMapper {
         for (const item of objects) {
             const name = item.name.split('.').slice(0, -1).join('.');
             const mapperPath = pathJoin(this.path, name) + '.mapper.json';
-            if (!fsExists(mapperPath)) {
-                console.warn(`Missing mapper for ${name}`);
-                continue;
-            }
+            const hasMapper = fsExists(mapperPath);
+            if (!hasMapper) console.warn(`Missing mapper for ${name}`);
 
-            const mapperContent = await fsReadfile(mapperPath, { encoding: 'utf-8' });
-            const mapper = JSON.parse(mapperContent);
+            const mapperContent = hasMapper ? await fsReadfile(mapperPath, { encoding: 'utf-8' }) : ''; 
+            const mapper = hasMapper ? JSON.parse(mapperContent) : {}; 
             const mappedItem = this.deepMapList(JSON.parse(item.content), mapper);
 
             result.push({
