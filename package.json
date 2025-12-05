@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "main": "./src/main.ts",
   "scripts": {
-    "start": "ts-node ./src/main.ts --input ../requests --output ./output --maps ./mappers --output-format csv"
+    "start:json": "ts-node ./src/main.ts --input ../requests --output ./output --maps ./mappers --output-format json",
+    "start:csv": "ts-node ./src/main.ts --input ../requests --output ./output --maps ./mappers --output-format csv"
   },
   "author": "Gabriel Pupim <gabriel.pda15@gmail.com>",
   "license": "MIT",

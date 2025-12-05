@@ -10,7 +10,10 @@ async function main() {
     const startDate = new Date();
     const args = Arguments.get();
 
-    if (typeof args.input === 'boolean' || typeof args.output === 'boolean' || typeof args.maps === 'boolean' || typeof args['output-format'] === 'boolean')
+    if (typeof args.input === 'boolean' 
+        || typeof args.output === 'boolean' 
+        || typeof args.maps === 'boolean' 
+        || typeof args['output-format'] === 'boolean')
         throw new Error('Invalid input and output!');
 
     const outputFormat = args['output-format'].toLowerCase();
