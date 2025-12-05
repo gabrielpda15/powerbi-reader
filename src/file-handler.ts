@@ -57,11 +57,11 @@ export class FileHandler {
         await this.mkdir(this.path);
     }
 
-    public async writeFiles(...files: { name: string, content: string }[]): Promise<void> {
+    public async writeFiles(format: string, ...files: { name: string, content: string }[]): Promise<void> {
         await this.ensureDirectoryExists();
 
         const fileWritePromises = files.map(async file => {
-            const filePath = pathJoin(this.path, file.name) + '.json';
+            const filePath = pathJoin(this.path, file.name) + `.${format}`;
             await this.writeFile(filePath, file.content);
         });
 

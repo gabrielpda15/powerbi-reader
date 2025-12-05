@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "./src/main.ts",
   "scripts": {
-    "start": "ts-node ./src/main.ts --input ../requests --output ./output"
+    "start": "ts-node ./src/main.ts --input ../requests --output ./output --maps ./mappers --output-format csv"
   },
   "author": "Gabriel Pupim <gabriel.pda15@gmail.com>",
   "license": "MIT",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "dotenv": "^17.2.3",
+    "json-2-csv": "^5.5.10",
     "reflect-metadata": "^0.2.2"
   }
 }

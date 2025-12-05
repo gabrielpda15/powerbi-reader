@@ -1,14 +1,16 @@
 import { Dictionary } from "./generic-types";
 
-type ArgumentKeys = 'input' | 'output';
-type ArgumentValues = { [key in ArgumentKeys]: string | boolean };
+export type ArgumentKeys = 'input' | 'output' | 'maps' | 'output-format';
+export type ArgumentValues = { [key in ArgumentKeys]: string | boolean };
 
 export class Arguments {
 
     private static instance: Arguments;
     private static argumentKeyMapper: { [key: string]: ArgumentKeys } = {
         'i': 'input',
-        'o': 'output'
+        'o': 'output',
+        'm': 'maps',
+        'f': 'output-format'
     };
 
     private static getDefaultArguments(): ArgumentValues {
