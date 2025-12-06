@@ -5,6 +5,7 @@ import { readdir as fsReadDir, readFile as fsReadfile } from 'fs/promises';
 import { basename as pathBasename, join as pathJoin } from 'path';
 import { request as httpsRequest } from 'https';
 import { OutgoingHttpHeaders } from 'http';
+import { gunzip } from 'zlib';
 
 type ProcessedData = { name: string; data: DataHandlerResult };
 type NameContent = { name: string; content: string };
@@ -49,14 +50,29 @@ export class PowerBIReader {
                         headers: defaultHeaders,
                     },
                     (response) => {
-                        let data = '';
+                        const chunks = [];
 
                         response.on('data', (chunk) => {
-                            data += chunk.toString();
+                            chunks.push(chunk);
                         });
 
                         response.on('end', () => {
-                            res(data);
+                            const buffer = Buffer.concat(chunks);
+
+                            if (response.headers['content-encoding'] === 'gzip') {
+                                gunzip(buffer, (err, decodedBuffer) => {
+                                    if (err) {
+                                        rej(err);
+                                        return;
+                                    } 
+                                    
+                                    const data = decodedBuffer.toString('utf-8');
+                                    res(data);
+                                });
+                            } else {
+                                const data = buffer.toString('utf-8');
+                                res(data);
+                            }
                         });
                     }
                 );
